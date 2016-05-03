@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>My Fucking Diploma</title>
+	<meta charset="utf-8" />
+    <!--Stylesheets-->
+    <script src="scripts/jquery.globalize/globalize.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="Content/dx.common.css"/>
+    <link rel="stylesheet" href="Content/dx.light.css" />
+    <!--Liraries-->
+    <script src="scripts/jquery-2.2.3.js"></script>
+    <script src="scripts/angular.js"></script>
+    <script src="scripts/angular-route.js"></script>
+    <script src="scripts/angular-sanitize.js"></script>
+    <script src="scripts/dx.webappjs.js"></script>
+    <!--JS-Scripts-->
+    <script src="JSController/HomeController.js"></script>
+
+</head>
+<body ng-controller="defaultController">
+    <div dx-button="createNewCard"></div>
+    <!-- Пошук -->
+    <div dx-text-box="searchInCards" ng-model="inCardsSearch"></div>
+
+    <!--Pop up for create a new Card-->
+    <div dx-popup="createNewCardPopup">
+        <div class="label">Фамилия</div>
+        <div dx-text-box="firstnamePerson" ng-model="personFirstname"></div>
+        
+        <div class="label">Имя</div>
+        <div dx-autocomplete="secondnamePerson" ng-model="personSecondname"></div>
+
+        <div class="label">Дата Рождения</div>
+        <!--<div id="calendar-container" dx-calendar="birthdatePerson" ng-model="personBirthdate"></div>-->
+        <div id="selected-date" dx-date-box="personBirthdate"></div>
+        <!--Тут павінны быць календар за датай нараджэння персоны-->
+                
+        <div class="label">Адрес проживания</div>
+        <div dx-text-box="addressPerson" ng-model="personAddress"></div>
+
+        <div class="label">Семейное Положение</div>
+        <div dx-select-box="relationshipStatusPerson" ng-model="personRelationshipStatus"></div>
+
+        <div class="label">Университет</div>
+        <div dx-select-box="universityPerson" ng-model="personUniversity"></div>
+
+        <div class="label">Пол</div>
+        <div dx-select-box="sexPerson" ng-model="personSex"></div><br />
+
+        <div dx-button="savePerson"></div>
+        <div dx-button="cancelFromSavePerson"></div>
+
+    </div>
+
+    <div class="table-responsive">
+        <div ng-repeat="card in cardsArray | filter: searchValue">
+            <table class="table" style="width:100%">
+                <tr class="info">
+                    <th width="100"><em>Id</em></th>
+                    <th width="100"><em>Имя</em></th>
+                    <th width="100"><em>Фамилия</em></th>
+                    <th width="100"><em>Адрес</em></th>
+                    <th width="100"><em>Дата Рождения</em></th>
+                    <th width="100"><em>Детали</em></th>
+                    <tr height="20">
+                        <td width="15">{{card.id}}</td>
+                        <td width="70">{{card.fname}}</td>
+                        <td width="70">{{card.sname}}</td>
+                        <td width="70">{{card.address}}</td>
+                        <td width="70">{{card.birthDate | date:'yyyy-MM-dd'}}</td>
+                        <!--<td width="70"><div dx-button="showButton"></div></td>-->
+                        
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
