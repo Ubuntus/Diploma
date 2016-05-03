@@ -177,7 +177,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
             value: "searchValue"
         },
         placeholder: "Поиск",
-        width: 300,
+        width: 'auto',
         mode: "search",
         valueChangeEvent: "keyup"
     };
@@ -227,8 +227,62 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
             $scope.visibleCreateNewCardPopup = false;
         }
     };
-
-   
+    //Дата грід з карткамі
+    $scope.cardsDataGrid = {
+        bindingOptions: {
+            dataSource: 'cardsArray | filter: searchValue'
+        },
+        selection: {
+            mode: 'single'
+        },
+        showCheckBoxesMode: 'onLongTap',
+        columns: [
+            {
+                dataField: "id",
+                caption: "№",
+                width: 30
+            },
+            {
+                dataField: "fname",
+                caption: "Имя"
+            },
+            {
+                dataField: "sname",
+                caption: "Фамилия"
+            },
+            {
+                dataField: "address",
+                caption: "Адрес"
+            },
+            
+            {
+                dataField: "university",
+                caption: "ВУЗ"
+            },
+            {
+                dataField: "sex",
+                caption: "Пол"
+            },
+            {
+                dataField: "birthDate",
+                caption: "Дата рождения",
+                dataType: 'date'
+               
+            }
+        ],
+        paging: { pageSize: 8 },
+        pager: {
+            showPageSizeSelector: true,
+            allowedPageSized:[3,5,8] 
+        },
+        showBorders: true,
+        showRowLines: true,
+        onSelectionChanged: function(e)
+        {
+            var data = e.selectedRowsData;
+            console.log(data);
+        }
+    };
 });
 
 myApp.factory('businessLogicOfMyApp', function($http, $q) {

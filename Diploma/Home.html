@@ -54,7 +54,9 @@
 
     </div>
 
-    <div class="table-responsive">
+    <div id="grid-container" dx-data-grid="cardsDataGrid"></div> 
+
+    <!--<div class="table-responsive">
         <div ng-repeat="card in cardsArray | filter: searchValue">
             <table class="table" style="width:100%">
                 <tr class="info">
@@ -70,12 +72,12 @@
                         <td width="70">{{card.sname}}</td>
                         <td width="70">{{card.address}}</td>
                         <td width="70">{{card.birthDate | date:'yyyy-MM-dd'}}</td>
-                        <!--<td width="70"><div dx-button="showButton"></div></td>-->
+                        <td width="70"><div dx-button="showButton"></div></td>
                         
                 </tr>
             </table>
         </div>
-    </div>
+    </div>-->
 
 </body>
 </html>
