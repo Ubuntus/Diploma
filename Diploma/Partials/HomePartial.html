@@ -1,0 +1,18 @@
+﻿<div dx-button="createNewCard"></div>
+<div dx-button="createNewChaper"></div>
+<div dx-button="showCardDetails"></div>
+
+<div dx-popup="createNewChapter">
+    <label>Новый Раздел</label>
+    <div dx-text-box="newChapterValue" ng-model="valueNewChapter"></div>
+    <br />
+    <div dx-button="saveNewChapter"></div>
+    <div dx-button="cancelFromSavingNewChaper"></div>
+
+</div>
+
+<div dx-text-box="searchInCards" ng-model="inCardsSearch"></div>
+
+<div id="grid-container" dx-data-grid="cardsDataGrid"></div>
+
+

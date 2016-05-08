@@ -20,5 +20,7 @@ namespace Diploma.Controllers
         {
             new DataServiceCards().AddCard(card);
         }
+        
+        
     }
 }

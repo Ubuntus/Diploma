@@ -1,31 +1,52 @@
 ﻿var myApp = angular.module("myApp", ['dx', 'ngRoute']);
-myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
+myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $location) {
     //Саздаць Картку
     $scope.createNewCard = {
         text: "Создать",
         type: "success",
         icon: "card",
         onClick: function () {
-            $scope.visibleCreateNewCardPopup = true;
+            //$scope.visibleCreateNewCardPopup = true;
+            $location.path('/createnewcard');
+
          }
     };
+    //айлзі першапачатковы
+    $scope.chaptersArray = [];
+    $scope.cardsArray = [];
+    $scope.concatArrayForItemId = [];
 
     //першапачатковы запыт на сервер 
     businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
-        $scope.cardsArray = cards;
-    });
+        if (cards.length != 0) {
+            $scope.cardsArray = cards;
+            
+        }
+        else {
+            console.log("cardsArray is empty ");
+        }
+        
+        
+    }).then(function () {
+        businessLogicOfMyApp.getChaptersFromServer().then(function (chapters) {
+            if (chapters.length != 0) {
+                $scope.chaptersArray = chapters;
+                
+            }
+            else {
+                console.log("ChaptersArray is empty");
+            }
+        }).then(function () {
+            $scope.concatArrayForItemId = $scope.cardsArray.concat($scope.chaptersArray);
+           
+        
+    })});
 
-    //Поп-ап вакно для дабаўлення карткі
-    $scope.createNewCardPopup = {
-        bindingOptions: {
-            visible: "visibleCreateNewCardPopup"
-        },
-        closeOnOutsideClick: true
-    };
     //Прозвішча Персоны
     $scope.firstnamePerson = {
         placeholder: "Введите Фамилию",
-        showClearButton: true
+        showClearButton: true,
+        width: 500
     };
     //Імя Персоны
     var namesArray = ["Диаc", "Матвей", "Артём", "Янис", "Максим", "Дмитрий", "Тимофей", "Даниил", "Роман", "Арсений", "Егор", "Кирилл", "Марк", "Андрей", "Никита", "Иван", "Богдан", "Алексей", "Илья", "Ярослав", "Тимур", "Михаил", "Владислав", "Сергей", "Александр", "Глеб", "Демид", "Денис", "Руслан", "Аскар", "Павел", "Савелий", "Замир", "Константин", "Вадим", "Евгений", "Елисей", "Дамир", "Игорь", "Владимир", "Семён", "Алан", "Захар", "Марсель", "Георгий", "Вячеслав", "Антон", "Артур", "Давид", "Мадияр", "Олег", "Степан", "Родион", "Назар", "Станислав", "Николай", "Мирослав", "Валерий", "Марат", "Фёдор", "Савва", "Виктор", "Святослав", "Милан", "Добрыня", "Виталий", "Юрий", "Ленар", "Ростислав", "Радислав", "Яромир", "Арсен", "Ильяр", "Радик", "Анатолий", "Батыр", "Назым", "Всеволод", "Василий", "Адильхан", "Ринат", "Камиль", "Азамат", "Рафаэль", "Алихан", "Доброслав", "Пётр", "Бахыт", "Ваган", "Вольга", "Давлат", "Малик", "Тарас", "Валентин", "Ратибор", "Драгомир", "Олесь", "Мстислав", "Ждан", "Любомир", "Милана",
@@ -132,12 +153,20 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
         dataSource: namesArray,
         placeholder: "Введите Имя",
         showClearButton: true,
+        width:500
         
+    };
+    //Імя па бацьку
+    $scope.thirdnamePerson = {
+        placeholder: "Введите Отчество",
+        showClearButton: true,
+        width: 500
     };
     //Адрас Персоны
     $scope.addressPerson = {
         placeholder: "Введите Адрес",
-        showClearButton: true
+        showClearButton: true,
+        width: 500
     };
     //сямейны статус
     var relationshipStatusArray = ["Женат","Замужем","Не Женат", "Не Замужем"];
@@ -145,6 +174,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
     $scope.relationshipStatusPerson = {
         placeholder: "Выберите Семейное Положение",
         items: relationshipStatusArray,
+        width: 500
     };
     //Універсітэт
     var universityPersonArray = ["БГУ", "БНТУ", "БГМУ", "БГЭУ",
@@ -152,7 +182,8 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
 
     $scope.universityPerson = {
         placeholder: "Выберите Университет",
-        items: universityPersonArray
+        items: universityPersonArray,
+        width: 500
     };
 
     //Жанчына ці мужчына
@@ -160,13 +191,15 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
 
     $scope.sexPerson = {
         placeholder: "Выберите Пол",
-        items: sexPersonArray
+        items: sexPersonArray,
+        width: 500
     };
     //ДАТА нАРОДЗІНАЎ
     $scope.personBirthdate = {       
            bindingOptions: {
                value: 'currentValue'
-           }
+           },
+           width: 500
         
     };
 
@@ -181,29 +214,21 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
         mode: "search",
         valueChangeEvent: "keyup"
     };
-
-    //Кнопка паказаць картку
-    $scope.showButton = {
-        icon: 'preferences',
-        type: 'default',
-        onClick: function (e) {
-            console.log($scope.ppp);
-        }
-    };
+      
     //Захаваць Новую Картку
     $scope.savePerson = {
         text: "Сохранить",
         type: "success",
         icon: "save",
         onClick: function () {
-            businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
-                var cardsArray = cards;
+            
 
                 var personForSave = {
                     createdDate: businessLogicOfMyApp.getTimeNow(),
-                    id: businessLogicOfMyApp.itemId(cardsArray),
+                    id: businessLogicOfMyApp.itemId($scope.concatArrayForItemId),
                     fname: $scope.personFirstname,
                     sname: $scope.personSecondname,
+                    thname: $scope.personThirdname,
                     address: $scope.personAddress,
                     relationshipStatus: $scope.personRelationshipStatus,
                     university: $scope.personUniversity,
@@ -214,7 +239,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
                 businessLogicOfMyApp.sendCardToServer(personForSave);
                 $scope.visibleCreateNewCardPopup = false;
                
-            });           
+                       
         }
     };
 
@@ -224,10 +249,10 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
         type: "default",
         icon: "remove",
         onClick: function () {
-            $scope.visibleCreateNewCardPopup = false;
+            $location.path('/');
         }
     };
-    //Дата грід з карткамі
+    //Дата- грід з карткамі
     $scope.cardsDataGrid = {
         bindingOptions: {
             dataSource: 'cardsArray | filter: searchValue'
@@ -251,6 +276,16 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
                 caption: "Фамилия"
             },
             {
+                dataField: "thname",
+                caption: "Отчество",
+            },
+            {
+                dataField: "birthDate",
+                caption: "Дата рождения",
+                dataType: 'date'
+
+            },
+            {
                 dataField: "address",
                 caption: "Адрес"
             },
@@ -263,12 +298,8 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
                 dataField: "sex",
                 caption: "Пол"
             },
-            {
-                dataField: "birthDate",
-                caption: "Дата рождения",
-                dataType: 'date'
-               
-            }
+            
+            
         ],
         paging: { pageSize: 8 },
         pager: {
@@ -279,10 +310,84 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp) {
         showRowLines: true,
         onSelectionChanged: function(e)
         {
-            var data = e.selectedRowsData;
-            console.log(data);
+             $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
+            
+        },
+          };
+    
+    //Дадаць Новы Раздзел
+    $scope.createNewChaper = {
+        text: "Раздел",
+        type: "success",
+        icon: "add",
+        onClick: function () {
+            $scope.createNewChapter = true;
         }
     };
+
+    //Кнопка шоў дзеталі карткі
+    $scope.showCardDetails = {
+        text: "",
+        type: "default",
+        icon: "preferences",
+        onClick: function () {
+            if ($scope.itemIdFromShowButton)
+            {
+                $location.path('/carddetail/' + $scope.itemIdFromShowButton)
+            }
+            else {
+                alert("Error!!");
+            }
+           
+        }
+    };
+    //поп-ап дадаць новы чаптэр
+    $scope.createNewChapter = {
+        closeOnOutsideClick: true,
+        dragEnabled: true,
+        bindingOptions: {
+            visible: "createNewChapter"
+        }
+    };
+
+    //захаваць новы чаптэр
+    $scope.saveNewChapter = {
+        text: "Сохранить",
+        icon: "add",
+        type: "success",
+        onClick: function () {
+            var chapter = {
+                id: businessLogicOfMyApp.itemId($scope.concatArrayForItemId),
+                caption: $scope.valueNewChapter
+            };
+
+            businessLogicOfMyApp.sendChapterToServer(chapter);
+            
+        }
+    };
+    //адмена захавання новага чапрэра
+    $scope.cancelFromSavingNewChaper = {
+        text: "Отмена",
+        icon: "remove",
+        type: "default",
+        onClick: function () {
+            $scope.createNewChapter = false;
+        }
+    }
+
+    //дрэва
+    $scope.treeviewOfChaptersWithData = {
+        bindingOptions: {
+            dataSource: 'chaptersArray'
+        },
+        keyExpr: 'id',
+        displayExpr: 'caption',
+        dataStructure: 'plain',
+        onItemClick: function (e) {
+            $scope.ajfkdlajda = e.itemData.caption;
+        }
+    };
+    $scope.ajfkdlajda = "";
 });
 
 myApp.factory('businessLogicOfMyApp', function($http, $q) {
@@ -293,25 +398,26 @@ myApp.factory('businessLogicOfMyApp', function($http, $q) {
             //storageOfCards.push(card);
         },
         //id
-        itemId: function (cardsArray) {
-            var idArray = [];
-            if (cardsArray.length != 0)
+        itemId: function (concatArray) {
+           var idArray = [];
+            if(concatArray.length != 0)
             {
-                for (var i in cardsArray)
+                for(var i in concatArray)
                 {
-                    for (var j in cardsArray[i])
-                    {
-                        idArray = idArray.concat(cardsArray[i]['id']);
-                    }
+                    idArray = idArray.concat(concatArray[i].id);
                 }
+                    
                 id = Math.max.apply(Math, idArray) + 1;
+               
                 return id;
+              
             }
-            else{
+            else
+            {
                 id = 1;
                 return id;
             }
-            
+ 
         },
         //get cards from server
         getCardsFromServer: function () {
@@ -324,6 +430,20 @@ myApp.factory('businessLogicOfMyApp', function($http, $q) {
             }).then(function successCallback(response) {
                 myCards = response.data;
                 defferedObj.resolve(myCards);
+            });
+            return defferedObj.promise;
+        },
+          //get chapters from server
+        getChaptersFromServer: function () {
+            var defferedObj = $q.defer();
+            var myChapters = [];
+
+            $http({
+                method: 'GET',
+                url: '/api/getChapers'
+            }).then(function successCallback(response) {
+                myChapters = response.data;
+                defferedObj.resolve(myChapters);
             });
             return defferedObj.promise;
         },
@@ -340,6 +460,18 @@ myApp.factory('businessLogicOfMyApp', function($http, $q) {
                 console.log("a new card was saved successfully");
             });
         },
+          //send chapter to server
+        sendChapterToServer: function (chapter) {
+            var req = {
+                method: 'POST',
+                url: '/api/addChapter',
+                data: chapter
+            };
+
+            $http(req).then(function sucessCallback() {
+                console.log("a new chapter was saved successfully");
+            });
+        },
 
           //Get Time now
         getTimeNow: function () {
@@ -350,6 +482,27 @@ myApp.factory('businessLogicOfMyApp', function($http, $q) {
 
 });
 
+myApp.config(['$routeProvider', function ($routeProvider) {
+    $routeProvider.when('/', {
+        templateUrl: "Partials/HomePartial.html",
+        controller: "defaultController"
+    })
+    .when('/createnewcard', {
+        templateUrl: "Partials/CreateNewCard.html",
+        controller: "defaultController"
+    })
+    .when('/carddetail/:cardId', {
+        templateUrl: "Partials/CardDetails.html",
+        controller: "defaultController"
+    })
+    //.when('/createnewchapter', {
+    //    templateUrl: "Partials/CreateNewPartial.html",
+    //    controller: "defaultController"
+    //})
+    ;
+
+    $routeProvider.otherwise({ redirectTo: '/' });
+}]);
 
 
 

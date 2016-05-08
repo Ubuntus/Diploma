@@ -6443,3 +6443,14 @@
   padding-left: 0;
   padding-right: 20px;
 }
+
+#leftSideCss
+{
+    width: 40%;
+    float: left;
+    
+}
+#rightSideCss{
+    width:60%;
+    float: right;
+}

@@ -14,6 +14,8 @@ namespace Diploma.Models
         public string FName { get; set; }
         [JsonProperty("sname")]
         public string SName { get; set; }
+        [JsonProperty("thname")]
+        public string ThName { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
         [JsonProperty("relationshipStatus")]

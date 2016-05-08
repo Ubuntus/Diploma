@@ -1,0 +1,29 @@
+﻿<div align="center">
+    <label>Фамилия</label>
+    <div dx-text-box="firstnamePerson" ng-model="personFirstname"></div>
+
+    <label>Имя</label>
+    <div dx-autocomplete="secondnamePerson" ng-model="personSecondname"></div>
+
+    <label>Отчество</label>
+    <div dx-text-box="thirdnamePerson" ng-model="personThirdname"></div>
+
+    <label>Дата Рождения</label>
+    <div id="selected-date" dx-date-box="personBirthdate"></div>
+    <!--Тут павінны быць календар за датай нараджэння персоны-->
+
+    <label>Адрес проживания</label>
+    <div dx-text-box="addressPerson" ng-model="personAddress"></div>
+
+    <label>Семейное Положение</label>
+    <div dx-select-box="relationshipStatusPerson" ng-model="personRelationshipStatus"></div>
+
+    <label>Университет</label>
+    <div dx-select-box="universityPerson" ng-model="personUniversity"></div>
+
+    <label>Пол</label>
+    <div dx-select-box="sexPerson" ng-model="personSex"></div><br />
+
+    <div dx-button="savePerson"></div>
+    <div dx-button="cancelFromSavePerson"></div>
+</div>

@@ -136,6 +136,10 @@
     <Content Include="Global.asax" />
     <Content Include="Home.html" />
     <Content Include="JSController\HomeController.js" />
+    <Content Include="Partials\CardDetails.html" />
+    <Content Include="Partials\CreateNewCard.html" />
+    <Content Include="Partials\CreateNewPartial.html" />
+    <Content Include="Partials\HomePartial.html" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="scripts\angular-mocks.js" />
@@ -555,12 +559,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ChapterController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Card.cs" />
+    <Compile Include="Models\Chapter.cs" />
     <Compile Include="Models\DataServiceCards.cs" />
+    <Compile Include="Models\DataServiceChapters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
