@@ -12,6 +12,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
          }
     };
     //айлзі першапачатковы
+    $scope.itemIdFromShowButton = 0;
     $scope.chaptersArray = [];
     $scope.cardsArray = [];
     $scope.concatArrayForItemId = [];
@@ -200,7 +201,6 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                value: 'currentValue'
            },
            width: 500
-        
     };
 
     //Лайн пошуку
@@ -253,6 +253,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         }
     };
     //Дата- грід з карткамі
+    $scope.cardSelectedArray = [];
     $scope.cardsDataGrid = {
         bindingOptions: {
             dataSource: 'cardsArray | filter: searchValue'
@@ -310,7 +311,8 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         showRowLines: true,
         onSelectionChanged: function(e)
         {
-             $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
+            $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
+            $scope.cardSelectedArray = e.selectedRowsData[0];
             
         },
           };
@@ -326,6 +328,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     };
 
     //Кнопка шоў дзеталі карткі
+    var localCardId = 0;
     $scope.showCardDetails = {
         text: "",
         type: "default",
@@ -334,6 +337,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             if ($scope.itemIdFromShowButton)
             {
                 $location.path('/carddetail/' + $scope.itemIdFromShowButton)
+                console.log($scope.cardSelectedArray);
             }
             else {
                 alert("Error!!");
@@ -383,11 +387,66 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         keyExpr: 'id',
         displayExpr: 'caption',
         dataStructure: 'plain',
+        parentIdExpr: 'parentId',
         onItemClick: function (e) {
             $scope.ajfkdlajda = e.itemData.caption;
         }
     };
     $scope.ajfkdlajda = "";
+
+    //дадць новы запис у картку
+    $scope.createNewrecordToCard = {
+        text: "Добавить Запись",
+        type: "success",
+        icon: 'add',
+        onClick: function () {
+            //  $location.path('/createnewrecord/' + $scope.itemIdFromShowButton);
+            $scope.addNewRecordToCardwindow = true;
+        }
+    };
+    //дадць новы запіс у картку попап вакно
+    $scope.addNewRecordToCard = {
+        closeOnOutsideClick: true,
+        title: "Добавить Новую Запись",
+        bindingOptions: {
+            visible: "addNewRecordToCardwindow"
+        }
+    };
+    //Захаваць запіс для карткі
+    $scope.saveRecord = {
+        text: "Сохранить",
+        type: "success",
+        icon: 'add',
+        onClick: function () {
+            var recordToCard = {
+                id: 0,
+                date: $scope.createRecordDate,
+                caption: $scope.recordCaption,
+                description: $scope.recordDescription,
+                parentId: $scope.recordChapter.id,
+                cardId: 0
+
+            };
+
+            console.log(recordToCard);
+        }
+    };
+
+    //дата захавання запісу
+    $scope.dateForNewRecord = {
+        bindingOptions: {
+            value: 'createRecordDate'
+        },
+        width: 500
+    };
+    //сэлект бокс для запісу
+    $scope.chapterOfRecord = {
+        bindingOptions: {
+            dataSource: 'chaptersArray'
+        },
+        displayExpr: "caption"
+    };
+
 });
 
 myApp.factory('businessLogicOfMyApp', function($http, $q) {
@@ -493,6 +552,10 @@ myApp.config(['$routeProvider', function ($routeProvider) {
     })
     .when('/carddetail/:cardId', {
         templateUrl: "Partials/CardDetails.html",
+        controller: "defaultController"
+    })
+    .when('/createnewrecord/:cardId', {
+        templateUrl: "Partials/CreateNewRecordToCard.html",
         controller: "defaultController"
     })
     //.when('/createnewchapter', {

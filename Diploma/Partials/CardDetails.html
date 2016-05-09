@@ -1,6 +1,23 @@
 ﻿<div id="leftSideCss">
     <div id="treeView">
+        <div dx-button="createNewrecordToCard"></div>
         <div dx-tree-view="treeviewOfChaptersWithData"></div>
     </div>
+    <div>
+        <div class="popup" dx-popup="addNewRecordToCard">
+            <label>Дата</label>
+            <div id="selected-date" dx-date-box="dateForNewRecord"></div>
+            <label>Раздел</label>
+            <div dx-select-box="chapterOfRecord" ng-model="recordChapter"></div>
+            <label>Поле Для Заполнения</label>
+            <div dx-text-box="captionOfRecord" ng-model="recordCaption"></div>
+            <label>Описание</label>
+            <div dx-text-box="descriptionOfRecord" ng-model="recordDescription"></div>
+            <br />
+            <div dx-button="saveRecord"></div>
+        </div>
+    </div>
 </div>
+
 <div id="rightSideCss"></div>
+

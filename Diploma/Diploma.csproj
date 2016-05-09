@@ -139,6 +139,7 @@
     <Content Include="Partials\CardDetails.html" />
     <Content Include="Partials\CreateNewCard.html" />
     <Content Include="Partials\CreateNewPartial.html" />
+    <Content Include="Partials\CreateNewRecordToCard.html" />
     <Content Include="Partials\HomePartial.html" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
