@@ -562,6 +562,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ChapterController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RecordToCardController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -569,6 +570,8 @@
     <Compile Include="Models\Chapter.cs" />
     <Compile Include="Models\DataServiceCards.cs" />
     <Compile Include="Models\DataServiceChapters.cs" />
+    <Compile Include="Models\DataServiceRecords.cs" />
+    <Compile Include="Models\RecordToCard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

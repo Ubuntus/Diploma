@@ -1,5 +1,5 @@
 ﻿var myApp = angular.module("myApp", ['dx', 'ngRoute']);
-myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $location) {
+myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $location, $routeParams) {
     //Саздаць Картку
     $scope.createNewCard = {
         text: "Создать",
@@ -16,6 +16,10 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     $scope.chaptersArray = [];
     $scope.cardsArray = [];
     $scope.concatArrayForItemId = [];
+    $scope.recordsArray = [];
+    $scope.allRecordsOfCardArray = [];
+    $scope.localArray = [];
+    
 
     //першапачатковы запыт на сервер 
     businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
@@ -41,7 +45,23 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             $scope.concatArrayForItemId = $scope.cardsArray.concat($scope.chaptersArray);
            
         
-    })});
+        }).then(function () {
+            businessLogicOfMyApp.getRecordsFromServer().then(function (records) {
+                if (records != 0) {
+                    $scope.recordsArray = records;
+                    $scope.concatArrayForItemId = $scope.concatArrayForItemId.concat($scope.recordsArray);
+                }
+            })
+        })//.then(function(){
+        //    if($scope.allRecordsOfCardArray.length != 0){
+        //        $scope.localArray = $scope.chaptersArray.concat($scope.allRecordsOfCardArray);
+        //    }
+        //    else{
+        //        $scope.localArray = $scope.chaptersArray;
+        //    }
+        //})
+
+    });
 
     //Прозвішча Персоны
     $scope.firstnamePerson = {
@@ -238,8 +258,6 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 //console.log(personForSave);
                 businessLogicOfMyApp.sendCardToServer(personForSave);
                 $scope.visibleCreateNewCardPopup = false;
-               
-                       
         }
     };
 
@@ -290,7 +308,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 dataField: "address",
                 caption: "Адрес"
             },
-            
+
             {
                 dataField: "university",
                 caption: "ВУЗ"
@@ -299,23 +317,21 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 dataField: "sex",
                 caption: "Пол"
             },
-            
-            
+
+
         ],
         paging: { pageSize: 8 },
         pager: {
             showPageSizeSelector: true,
-            allowedPageSized:[3,5,8] 
+            allowedPageSized: [3, 5, 8]
         },
         showBorders: true,
         showRowLines: true,
-        onSelectionChanged: function(e)
-        {
+        onSelectionChanged: function (e) {
             $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
             $scope.cardSelectedArray = e.selectedRowsData[0];
-            
         },
-          };
+    };
     
     //Дадаць Новы Раздзел
     $scope.createNewChaper = {
@@ -326,7 +342,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             $scope.createNewChapter = true;
         }
     };
-
+    var jdskla = [];
     //Кнопка шоў дзеталі карткі
     var localCardId = 0;
     $scope.showCardDetails = {
@@ -334,15 +350,23 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         type: "default",
         icon: "preferences",
         onClick: function () {
-            if ($scope.itemIdFromShowButton)
-            {
-                $location.path('/carddetail/' + $scope.itemIdFromShowButton)
-                console.log($scope.cardSelectedArray);
+            if ($scope.itemIdFromShowButton) {
+                $location.path('/carddetail/' + $scope.itemIdFromShowButton);
+                jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
+                console.log($scope.itemIdFromShowButton)
+                console.log(jdskla);
+                
             }
             else {
-                alert("Error!!");
+                alert("Error!!!");
             }
-           
+        }
+    };
+    $scope.backToGeneralPage = {
+        text: "Back",
+        onClick: function () {
+            jdskla = [];
+            $location.path('/');
         }
     };
     //поп-ап дадаць новы чаптэр
@@ -382,17 +406,21 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     //дрэва
     $scope.treeviewOfChaptersWithData = {
         bindingOptions: {
-            dataSource: 'chaptersArray'
+            dataSource: 'localArray',
         },
         keyExpr: 'id',
         displayExpr: 'caption',
-        dataStructure: 'plain',
         parentIdExpr: 'parentId',
+        dataStructure: 'plain',
         onItemClick: function (e) {
-            $scope.ajfkdlajda = e.itemData.caption;
+           
         }
     };
-    $scope.ajfkdlajda = "";
+    
+    //аднавіць дрэва
+    var updateTree = function () {
+        $scope.localArray = $scope.chaptersArray.concat($scope.allRecordsOfCardArray);
+    }
 
     //дадць новы запис у картку
     $scope.createNewrecordToCard = {
@@ -402,6 +430,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onClick: function () {
             //  $location.path('/createnewrecord/' + $scope.itemIdFromShowButton);
             $scope.addNewRecordToCardwindow = true;
+            
         }
     };
     //дадць новы запіс у картку попап вакно
@@ -419,16 +448,15 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         icon: 'add',
         onClick: function () {
             var recordToCard = {
-                id: 0,
-                date: $scope.createRecordDate,
+                id: businessLogicOfMyApp.itemId($scope.concatArrayForItemId),
+                dateOfCreateRecord: $scope.createRecordDate,
                 caption: $scope.recordCaption,
                 description: $scope.recordDescription,
                 parentId: $scope.recordChapter.id,
-                cardId: 0
-
+                cardId: $routeParams.cardId
             };
 
-            console.log(recordToCard);
+            businessLogicOfMyApp.sendNewRecordToStorage(recordToCard);
         }
     };
 
@@ -449,8 +477,25 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
 
 });
 
-myApp.factory('businessLogicOfMyApp', function($http, $q) {
-      return {
+myApp.factory('businessLogicOfMyApp', function ($http, $q) {
+    var cardIdFromShowButton = 0;
+    var returnedArrayEmpty = [];
+    return {
+        //get record by cardId
+        getVardsRecordsByCardId: function (id, recordsArray) {
+            var cardsRecords = [];
+            if (recordsArray.length != 0) {
+                for (var i = 0; i < recordsArray.length; i++) {
+                    if (recordsArray[i].cardId === id) {
+                        cardsRecords.push(recordsArray[i]);
+                    }
+                }
+            }
+            
+         return cardsRecords;
+          
+           
+        },
         //save new card to storage
         saveNewCard: function (card)
         {
@@ -535,6 +580,33 @@ myApp.factory('businessLogicOfMyApp', function($http, $q) {
           //Get Time now
         getTimeNow: function () {
             return new Date();
+        },
+         //save new record
+        sendNewRecordToStorage: function(record)
+        {
+            var req = {
+                method: 'POST',
+                url: '/api/addRecord',
+                data: record
+            };
+
+            $http(req).then(function successCallback() {
+                console.log("a new card was saved successfully");
+            });
+        },
+          //get records from server
+        getRecordsFromServer: function () {
+             var defferedObj = $q.defer();
+            var myCards = [];
+
+            $http({
+                method: 'GET',
+                url: '/api/getRecords'
+            }).then(function successCallback(response) {
+                myCards = response.data;
+                defferedObj.resolve(myCards);
+            });
+            return defferedObj.promise;
         }
     };
 
