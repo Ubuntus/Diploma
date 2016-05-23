@@ -52,7 +52,16 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                     $scope.concatArrayForItemId = $scope.concatArrayForItemId.concat($scope.recordsArray);
                 }
             })
-        })//.then(function(){
+        }).then(function () {
+            if($scope.jdskla.length != 0)
+            {
+                $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
+            }
+            else {
+                $scope.localArray = $scope.chaptersArray;
+            }
+        })
+        //.then(function(){
         //    if($scope.allRecordsOfCardArray.length != 0){
         //        $scope.localArray = $scope.chaptersArray.concat($scope.allRecordsOfCardArray);
         //    }
@@ -330,6 +339,8 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onSelectionChanged: function (e) {
             $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
             $scope.cardSelectedArray = e.selectedRowsData[0];
+            $scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
+            
         },
     };
     
@@ -342,7 +353,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             $scope.createNewChapter = true;
         }
     };
-    var jdskla = [];
+    $scope.jdskla = [];
     //Кнопка шоў дзеталі карткі
     var localCardId = 0;
     $scope.showCardDetails = {
@@ -352,10 +363,10 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onClick: function () {
             if ($scope.itemIdFromShowButton) {
                 $location.path('/carddetail/' + $scope.itemIdFromShowButton);
-                jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
-                console.log($scope.itemIdFromShowButton)
-                console.log(jdskla);
-                
+                //$scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
+                $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
+                console.log($scope.localArray);
+               
             }
             else {
                 alert("Error!!!");
@@ -419,8 +430,14 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     
     //аднавіць дрэва
     var updateTree = function () {
-        $scope.localArray = $scope.chaptersArray.concat($scope.allRecordsOfCardArray);
+        $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
+        
     }
+
+    //$scope.$watch("localArray", function () {
+    //    updateTree();
+    //    console.log($scope.localArray);
+    //}, true);
 
     //дадць новы запис у картку
     $scope.createNewrecordToCard = {
