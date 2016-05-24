@@ -137,10 +137,11 @@
     <Content Include="Home.html" />
     <Content Include="JSController\HomeController.js" />
     <Content Include="Partials\CardDetails.html" />
+    <Content Include="Partials\Chapter.html" />
     <Content Include="Partials\CreateNewCard.html" />
-    <Content Include="Partials\CreateNewPartial.html" />
     <Content Include="Partials\CreateNewRecordToCard.html" />
     <Content Include="Partials\HomePartial.html" />
+    <Content Include="Partials\Record.html" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="scripts\angular-mocks.js" />

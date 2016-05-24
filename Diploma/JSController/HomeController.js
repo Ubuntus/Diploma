@@ -19,6 +19,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     $scope.recordsArray = [];
     $scope.allRecordsOfCardArray = [];
     $scope.localArray = [];
+    $scope.localArrayForDataGridFromClickToTreeviewElement = [];
     
 
     //першапачатковы запыт на сервер 
@@ -52,24 +53,8 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                     $scope.concatArrayForItemId = $scope.concatArrayForItemId.concat($scope.recordsArray);
                 }
             })
-        }).then(function () {
-            if($scope.jdskla.length != 0)
-            {
-                $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
-            }
-            else {
-                $scope.localArray = $scope.chaptersArray;
-            }
         })
-        //.then(function(){
-        //    if($scope.allRecordsOfCardArray.length != 0){
-        //        $scope.localArray = $scope.chaptersArray.concat($scope.allRecordsOfCardArray);
-        //    }
-        //    else{
-        //        $scope.localArray = $scope.chaptersArray;
-        //    }
-        //})
-
+        
     });
 
     //Прозвішча Персоны
@@ -339,8 +324,9 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onSelectionChanged: function (e) {
             $scope.itemIdFromShowButton = e.selectedRowsData[0].id;
             $scope.cardSelectedArray = e.selectedRowsData[0];
-            $scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
-            
+            //$scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
+            //$scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
+            //console.log($scope.localArray);
         },
     };
     
@@ -363,10 +349,6 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onClick: function () {
             if ($scope.itemIdFromShowButton) {
                 $location.path('/carddetail/' + $scope.itemIdFromShowButton);
-                //$scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($scope.itemIdFromShowButton, $scope.recordsArray);
-                $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
-                console.log($scope.localArray);
-               
             }
             else {
                 alert("Error!!!");
@@ -374,10 +356,17 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         }
     };
     $scope.backToGeneralPage = {
-        text: "Back",
+        text: "Обновить",
         onClick: function () {
-            jdskla = [];
-            $location.path('/');
+
+            businessLogicOfMyApp.getRecordsFromServer().then(function (records) {
+                if (records != 0) {
+                    $scope.recordsArray = records;
+                }
+            }).then(function () {
+                $scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($routeParams.cardId, $scope.recordsArray);
+                $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
+            });
         }
     };
     //поп-ап дадаць новы чаптэр
@@ -415,6 +404,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     }
 
     //дрэва
+    $scope.title = "";
     $scope.treeviewOfChaptersWithData = {
         bindingOptions: {
             dataSource: 'localArray',
@@ -424,21 +414,33 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         parentIdExpr: 'parentId',
         dataStructure: 'plain',
         onItemClick: function (e) {
-           
+            $scope.parentOrChildren = businessLogicOfMyApp.childrenOrParentInTreeview(e.itemData.parentId);
+            if ($scope.parentOrChildren == true) {
+                //Parent
+                console.log("Parent");
+                // $location.path('/chapter/' + e.itemData.id);
+                $scope.title = e.itemData.caption;
+                $scope.localArrayForDataGridFromClickToTreeviewElement = businessLogicOfMyApp.getAllRecordOfChapterInTreeview($scope.localArray, e.itemData.id);
+
+
+            }
+
+            else if ($scope.parentOrChildren == false) {
+                //Children
+                console.log("Children");
+                // $location.path('/record/' + e.itemData.id);
+                $scope.title = e.itemData.caption;
+                $scope.localArrayForDataGridFromClickToTreeviewElement = businessLogicOfMyApp.getRecordOfChartById($scope.jdskla, e.itemData.id);
+
+            }
         }
     };
     
-    //аднавіць дрэва
-    var updateTree = function () {
-        $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
-        
-    }
-
-    //$scope.$watch("localArray", function () {
-    //    updateTree();
-    //    console.log($scope.localArray);
-    //}, true);
-
+    
+    $scope.$watch("localArray", function (newVal, OldVal, $scope) {
+        console.log("update");
+        //updateArrays();
+    }, true);
     //дадць новы запис у картку
     $scope.createNewrecordToCard = {
         text: "Добавить Запись",
@@ -447,7 +449,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onClick: function () {
             //  $location.path('/createnewrecord/' + $scope.itemIdFromShowButton);
             $scope.addNewRecordToCardwindow = true;
-            
+//            console.log($scope.chaptersArray);
         }
     };
     //дадць новы запіс у картку попап вакно
@@ -474,6 +476,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             };
 
             businessLogicOfMyApp.sendNewRecordToStorage(recordToCard);
+            updateArrays();
         }
     };
 
@@ -491,6 +494,50 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         },
         displayExpr: "caption"
     };
+    //data grid from treeview
+    $scope.dataGridInTreeView = {
+        bindingOptions: {
+            dataSource: 'localArrayForDataGridFromClickToTreeviewElement'
+        }
+
+    };
+
+    //update arrays for id 
+    var updateArrays = function () {
+        businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
+            if (cards.length != 0) {
+                $scope.cardsArray = cards;
+
+            }
+            else {
+                console.log("cardsArray is empty ");
+            }
+
+
+        }).then(function () {
+            businessLogicOfMyApp.getChaptersFromServer().then(function (chapters) {
+                if (chapters.length != 0) {
+                    $scope.chaptersArray = chapters;
+
+                }
+                else {
+                    console.log("ChaptersArray is empty");
+                }
+            }).then(function () {
+                $scope.concatArrayForItemId = $scope.cardsArray.concat($scope.chaptersArray);
+
+
+            }).then(function () {
+                businessLogicOfMyApp.getRecordsFromServer().then(function (records) {
+                    if (records != 0) {
+                        $scope.recordsArray = records;
+                        $scope.concatArrayForItemId = $scope.concatArrayForItemId.concat($scope.recordsArray);
+                    }
+                })
+            })
+
+        });
+    };
 
 });
 
@@ -498,20 +545,29 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
     var cardIdFromShowButton = 0;
     var returnedArrayEmpty = [];
     return {
+        //children or parent item in treeview
+        childrenOrParentInTreeview: function(item)
+        {
+            if(item == null)
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
         //get record by cardId
         getVardsRecordsByCardId: function (id, recordsArray) {
             var cardsRecords = [];
             if (recordsArray.length != 0) {
                 for (var i = 0; i < recordsArray.length; i++) {
-                    if (recordsArray[i].cardId === id) {
+                    if (recordsArray[i].cardId == id) {
                         cardsRecords.push(recordsArray[i]);
                     }
                 }
             }
-            
-         return cardsRecords;
-          
-           
+//            console.log(cardsRecords);
+            return cardsRecords;
         },
         //save new card to storage
         saveNewCard: function (card)
@@ -624,6 +680,34 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
                 defferedObj.resolve(myCards);
             });
             return defferedObj.promise;
+        },
+        //get all record of chapter
+        getAllRecordOfChapterInTreeview: function(recordsArray,chapterId)
+        {
+            var recordsOfChapter = [];
+            if (recordsArray.length != 0) {
+                for (var i = 0; i < recordsArray.length; i++) {
+                    if (recordsArray[i].parentId == chapterId) {
+                        recordsOfChapter.push(recordsArray[i]);
+                    }
+                }
+            }
+
+            return recordsOfChapter;
+
+        },
+        //get record
+        getRecordOfChartById(recordsArray, recordId) {
+            var recordArray = [];
+            if (recordsArray.length != 0) {
+                for (var i = 0; i < recordsArray.length; i++) {
+                    if (recordsArray[i].id == recordId) {
+                        recordArray.push(recordsArray[i]);
+                        break;
+                    }
+                }
+                return recordArray;
+            }
         }
     };
 
@@ -647,6 +731,12 @@ myApp.config(['$routeProvider', function ($routeProvider) {
         templateUrl: "Partials/CreateNewRecordToCard.html",
         controller: "defaultController"
     })
+    //.when('/chapter/:chapterId', {
+    //    templateUrl: "Partials/Chapter.html"
+    //})
+    //.when('/record/:recordId', {
+    //    templateUrl: "Partials/Record.html"
+    //})
     //.when('/createnewchapter', {
     //    templateUrl: "Partials/CreateNewPartial.html",
     //    controller: "defaultController"
@@ -655,7 +745,4 @@ myApp.config(['$routeProvider', function ($routeProvider) {
 
     $routeProvider.otherwise({ redirectTo: '/' });
 }]);
-
-
-
 
