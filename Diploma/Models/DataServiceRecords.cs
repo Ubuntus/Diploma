@@ -44,6 +44,24 @@ namespace Diploma.Models
             writeRecordsToFile(json);
         }
 
+        public void EdirRecord(RecordToCard record)
+        {
+            var arrayRecords = readRecordsFromFile();
+            var currentRecord =  arrayRecords.Where(p => p.Id == record.Id).SingleOrDefault();
+            arrayRecords.Remove(currentRecord);
+            arrayRecords.Add(record);
+            var json = JsonConvert.SerializeObject(arrayRecords.ToArray());
+            writeRecordsToFile(json);
+        }
+
+        public void DeleteRecord(RecordToCard record)
+        {
+            var arrayRecords = readRecordsFromFile();
+            var currentRecord = arrayRecords.Where(p => p.Id == record.Id).SingleOrDefault();
+            arrayRecords.Remove(currentRecord);
+            var json = JsonConvert.SerializeObject(arrayRecords.ToArray());
+            writeRecordsToFile(json);
+        }
 
 
     }

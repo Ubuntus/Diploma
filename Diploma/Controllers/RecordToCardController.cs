@@ -24,6 +24,20 @@ namespace Diploma.Controllers
         {
             new DataServiceRecords().AddRecord(record);
         }
-               
+        
+        [Route("editRecord")]
+        [HttpPost]
+        public void EditRecord(RecordToCard record)
+        {
+            new DataServiceRecords().EdirRecord(record);
+        }  
+        [Route("deleteRecord")]
+        [HttpPost]
+        public void DeleteRecord(RecordToCard record)
+        {
+            new DataServiceRecords().DeleteRecord(record);
+        }
+
+             
     }
 }

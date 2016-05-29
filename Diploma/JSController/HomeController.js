@@ -351,12 +351,12 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 $location.path('/carddetail/' + $scope.itemIdFromShowButton);
             }
             else {
-                alert("Error!!!");
+                alert("Пожалуйста, выберите карточку");
             }
         }
     };
     $scope.backToGeneralPage = {
-        text: "Обновить",
+        icon: "refresh",
         onClick: function () {
 
             businessLogicOfMyApp.getRecordsFromServer().then(function (records) {
@@ -417,7 +417,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
             $scope.parentOrChildren = businessLogicOfMyApp.childrenOrParentInTreeview(e.itemData.parentId);
             if ($scope.parentOrChildren == true) {
                 //Parent
-                console.log("Parent");
+                 //console.log("Parent");
                 // $location.path('/chapter/' + e.itemData.id);
                 $scope.title = e.itemData.caption;
                 $scope.localArrayForDataGridFromClickToTreeviewElement = businessLogicOfMyApp.getAllRecordOfChapterInTreeview($scope.localArray, e.itemData.id);
@@ -427,11 +427,15 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
 
             else if ($scope.parentOrChildren == false) {
                 //Children
-                console.log("Children");
+               // console.log("Children");
                 // $location.path('/record/' + e.itemData.id);
                 $scope.title = e.itemData.caption;
                 $scope.localArrayForDataGridFromClickToTreeviewElement = businessLogicOfMyApp.getRecordOfChartById($scope.jdskla, e.itemData.id);
-
+                //variables for edit or delete
+                $scope.itemIdForEditOrDelete = e.itemData.id;
+                $scope.itemParentIdForEditOrDelet = e.itemData.parentId;
+                $scope.itemCardIdForEditOrDelete = e.itemData.cardId;
+                $scope.itemDataCreatedForEditOrDelete = e.itemData.dateOfCreateRecord;
             }
         }
     };
@@ -498,10 +502,187 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     $scope.dataGridInTreeView = {
         bindingOptions: {
             dataSource: 'localArrayForDataGridFromClickToTreeviewElement'
-        }
+        },
+        columns: [
+            {
+                dataField: 'id',
+                caption: '№',
+                width: 30
+            },
+            {
+                dataField: 'dateOfCreateRecord',
+                caption: 'Дата Создания',
+                dataType: 'date',
+                width: 90
+            },
+            {
+                dataField: 'description',
+                caption: "Описание",
+                
+                
+            }
+        ]
 
     };
 
+    //Show Edit Windows for treeview Item 
+    $scope.showEditWindowForTreeviewItem = {
+        text: "Редактировать",
+        icon: "edit",
+        type: 'default',
+        onClick: function () {           
+            if ($scope.parentOrChildren == true) {
+                //Parent
+                //console.log("Parent");
+                alert("Извините, но Вы не можете редактировать этот элемент");
+            }
+            else if ($scope.parentOrChildren == false) {
+               // console.log("Children");
+                $scope.editItemFromTreeviewPopupWindow = true;
+            }
+        }
+    };
+
+    //show delete windows for treeview item
+    $scope.showDeleteWidowForTreeviewItem = {
+        text: "Удалить",
+        icon: 'trash',
+        type: 'danger',
+        onClick: function () {
+            if ($scope.parentOrChildren == true) {
+                //Parent
+                //console.log("Parent");
+                alert("Извините, но Вы не можете удалить этот элемент");
+            }
+            else if ($scope.parentOrChildren == false) {
+                // console.log("Children");
+                $scope.deleteItemFromTreeviewPopupWindow = true;
+            }
+           
+        }
+    };
+
+    //popup for edit item from treeview
+    $scope.editItemFromTreeview = {
+        closeOnOutsideClick: true,
+        dragEnabled: true,
+        title:'Редактировать Запись',
+        bindingOptions: {
+            visible: 'editItemFromTreeviewPopupWindow'
+        }
+    };
+    //popup for delete item from treeview
+    $scope.deleteItemFromTreeview = {
+        closeOnOutsideClick: true,
+        dragEnabled: true,
+        title: 'Удалить Запись',
+        height: 'auto',
+        width: 'auto',
+        bindingOptions: {
+            visible: 'deleteItemFromTreeviewPopupWindow'
+        }
+    };
+
+    //confirm edit item from treeview
+    $scope.confirmEditItemFromTreeview = {
+        text: 'Редактировать',
+        type: 'success',
+        icon: 'save',
+        onClick: function () {
+            var editRecordToCard = {
+                id: $scope.itemIdForEditOrDelete,
+                parentId: $scope.itemParentIdForEditOrDelet,
+                cardId: $scope.itemCardIdForEditOrDelete,
+                caption: $scope.recordCaptionEdit,
+                description: $scope.recordDescriptionEdit,
+                dateOfCreateRecord: $scope.itemDataCreatedForEditOrDelete
+            };
+
+            businessLogicOfMyApp.editItemFromTreeView(editRecordToCard);
+  
+        }
+    };
+
+    //cancel from edit item from treeview
+    $scope.cancelFromEditItemFromTreeview = {
+        text: 'Отмена',
+        type: 'default',
+        icon: 'close',
+        onClick: function () {
+            $scope.editItemFromTreeviewPopupWindow = false;
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////
+    ///Cancel From Deleting Record From  Treview
+    $scope.cancelFromDeleterecordFromTreeview = {
+        text: "Отмена",
+        type: "default",
+        icon: 'close',
+        onClick: function (e) {
+            $scope.deleteItemFromTreeviewPopupWindow = false;
+        }
+    };
+
+    //confirm delete elemtnt form treeview
+    $scope.confirmDeleteRecordFromTreeview = {
+        text: "Удалить",
+        type: "danger",
+        icon: "check",
+        onClick: function (e) {
+            var recordToDelete = {
+                id: $scope.itemIdForEditOrDelete,
+                parentId: $scope.itemParentIdForEditOrDelet,
+                cardId: $scope.itemCardIdForEditOrDelete,
+                caption: $scope.recordCaptionEdit,
+                description: $scope.recordDescriptionEdit,
+                dateOfCreateRecord: $scope.itemDataCreatedForEditOrDelete
+            };
+
+            businessLogicOfMyApp.deleteItemFromTreeviewFunc(recordToDelete);
+            $scope.deleteItemFromTreeviewPopupWindow = false;
+        }
+    };
+    /////
+    //Delete Card Button
+    $scope.deleteCard = {
+        icon: 'remove',
+        type: 'danger',
+        onClick: function () {
+            $scope.deleteCardFromStorageVisible = true;
+        }
+    };
+    //popup window for delete card
+    $scope.deleteCardPopupWindow = {
+        closeOnOutsideClick: true,
+        dragEnabled: true,
+        title: 'Удалить карточку',
+        height: 'auto',
+        width: 'auto',
+        bindingOptions: {
+            visible: 'deleteCardFromStorageVisible'
+        }
+    };
+    //cancel from confirm delete card
+    $scope.cancelFromDeletingCardFromStorage = {
+        text: "Отмена",
+        type: 'default',
+        icon: 'close',
+        onClick: function (e) {
+            $scope.deleteCardFromStorageVisible = false;
+        }
+    }
+
+    //confirm deleting caerd from storage button
+    $scope.confirmDeleteCardFromStorage = {
+        text: "Удалить",
+        type: 'danger',
+        icon: 'remove',
+        onClick: function (e) {
+            businessLogicOfMyApp.deleteCardFromStorageFunc($scope.cardsArray, $routeParams.cardId);
+            
+        }
+    };
     //update arrays for id 
     var updateArrays = function () {
         businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
@@ -545,6 +726,43 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
     var cardIdFromShowButton = 0;
     var returnedArrayEmpty = [];
     return {
+        //delete card form storage func
+        deleteCardFromStorageFunc: function(cardsArray,id){
+            var card = [];
+            for (var i in cardsArray) {
+                if (cardsArray[i].id == id) {
+                    card = cardsArray[i];
+                    break;
+                }
+            }
+
+            var req = {
+                method: 'POST',
+                url: '/api/deleteCard',
+                data: card
+            };
+
+            $http(req);
+            
+        },
+        //Edit item from treeview
+        editItemFromTreeView: function(Item){
+            var req = {
+                method: 'POST',
+                url: '/api/editRecord',
+                data: Item
+            };
+            $http(req);
+        },
+        //Delete item from treeview
+        deleteItemFromTreeviewFunc: function(item){
+            var req = {
+                method: 'POST',
+                url: '/api/deleteRecord',
+                data: item
+            };
+            $http(req);
+        },
         //children or parent item in treeview
         childrenOrParentInTreeview: function(item)
         {
@@ -697,7 +915,7 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
 
         },
         //get record
-        getRecordOfChartById(recordsArray, recordId) {
+        getRecordOfChartById: function(recordsArray, recordId) {
             var recordArray = [];
             if (recordsArray.length != 0) {
                 for (var i = 0; i < recordsArray.length; i++) {

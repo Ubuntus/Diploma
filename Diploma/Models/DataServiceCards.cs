@@ -43,5 +43,14 @@ namespace Diploma.Models
             var json = JsonConvert.SerializeObject(list.ToArray());
             writeCardsToFile(json);
         }
+
+        public void DeleteCard(Card card)
+        {
+            var arrayCards = readCardsFromFile();
+            var currentCard = arrayCards.Where(p => p.Id == card.Id).SingleOrDefault();
+            arrayCards.Remove(currentCard);
+            var json = JsonConvert.SerializeObject(arrayCards.ToArray());
+            writeCardsToFile(json);
+        }
     }
 }

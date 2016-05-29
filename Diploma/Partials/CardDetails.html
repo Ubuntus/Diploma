@@ -3,6 +3,8 @@
         <div dx-button="createNewrecordToCard"></div>
         <div dx-button="backToGeneralPage"></div>
         <div dx-tree-view="treeviewOfChaptersWithData"></div>
+        <div dx-button="showEditWindowForTreeviewItem"></div>
+        <div dx-button="showDeleteWidowForTreeviewItem"></div>
     </div>
     <div>
         <div class="popup" dx-popup="addNewRecordToCard">
@@ -20,8 +22,30 @@
     </div>
 </div>
 <div id="rightSideCss">
+    <div align="right">
+        <div dx-button="deleteCard"></div>
+    </div>
     <div id="grid-container" dx-data-grid="dataGridInTreeView"></div>
 </div>
+<!--Popup for Edit-->
+<div class="popup" dx-popup="editItemFromTreeview">
+    <label>Поле Для Заполнения</label>
+    <div dx-text-box="captionOfRecordtoEdit" ng-model="recordCaptionEdit"></div>
+    <label>Описание</label>
+    <div dx-text-box="descriptionOfRecordtoEdit" ng-model="recordDescriptionEdit"></div>
+    <br />
 
-
+    <div dx-button="confirmEditItemFromTreeview"></div>
+    <div dx-button="cancelFromEditItemFromTreeview"></div>
+</div>
+<!--Popup for delete-->
+<div class="popup" dx-popup="deleteItemFromTreeview">
+    <div dx-button="confirmDeleteRecordFromTreeview"></div>
+    <div dx-button="cancelFromDeleterecordFromTreeview"></div>
+</div>
+<!--Popup delete card-->
+<div class="popup" dx-popup="deleteCardPopupWindow">
+    <div dx-button="confirmDeleteCardFromStorage"></div>
+    <div dx-button="cancelFromDeletingCardFromStorage"></div>
+</div>
 

@@ -20,6 +20,13 @@ namespace Diploma.Controllers
         {
             new DataServiceCards().AddCard(card);
         }
+
+        [Route("deleteCard")]
+        [HttpPost]
+        public void DeleteCard(Card card)
+        {
+            new DataServiceCards().DeleteCard(card);
+        }
         
         
     }
