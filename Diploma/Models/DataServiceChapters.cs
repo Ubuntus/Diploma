@@ -11,6 +11,14 @@ namespace Diploma.Models
     {
         private string pathToFileWithChapers = HttpContext.Current.Server.MapPath("Data/chapter.json");
 
+        private string pathToLogFile = HttpContext.Current.Server.MapPath("Data/logs.log");
+        //write logs method
+        private void writeLogsToFile(string message)
+        {
+            var date = DateTime.Now;
+            File.AppendAllText(pathToLogFile,date + message);
+        }
+
         public void writeChapersToFile(string chapters)
         {
             using (StreamWriter writer = new StreamWriter(pathToFileWithChapers))
@@ -37,6 +45,11 @@ namespace Diploma.Models
 
         public void AddChapter(Chapter chapter)
         {
+            var listForLog = new List<Chapter>();
+            listForLog.Add(chapter);
+            var message = JsonConvert.SerializeObject(listForLog.ToArray());
+            writeLogsToFile(" new chapter was created" + message);
+
             var list = readChaptersFromFile();
             list.Add(chapter);
             var json = JsonConvert.SerializeObject(list.ToArray());

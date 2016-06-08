@@ -8,7 +8,6 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         onClick: function () {
             //$scope.visibleCreateNewCardPopup = true;
             $location.path('/createnewcard');
-
          }
     };
     //айлзі першапачатковы
@@ -651,6 +650,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
 
             businessLogicOfMyApp.deleteItemFromTreeviewFunc(recordToDelete);
             $scope.deleteItemFromTreeviewPopupWindow = false;
+            updateArrays();
         }
     };
     /////
@@ -793,10 +793,10 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
 
             }).then(function () {
                 businessLogicOfMyApp.getRecordsFromServer().then(function (records) {
-                    if (records != 0) {
+                   // if (records != 0) {
                         $scope.recordsArray = records;
                         $scope.concatArrayForItemId = $scope.concatArrayForItemId.concat($scope.recordsArray);
-                    }
+                   // }
                 })
             })
 

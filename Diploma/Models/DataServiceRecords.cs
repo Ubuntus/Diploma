@@ -12,6 +12,14 @@ namespace Diploma.Models
     {
         private string pathToFileWithRecords = HttpContext.Current.Server.MapPath("Data/record.json");
 
+        private string pathToLogsFile = HttpContext.Current.Server.MapPath("Data/logs.log");
+        //write logs method
+        private void writeLogsToFile(string message)
+        {
+            var date = DateTime.Now;
+            File.AppendAllText(pathToLogsFile, date + message);
+        }
+
         public void writeRecordsToFile(string records)
         {
             using (StreamWriter writer = new StreamWriter(pathToFileWithRecords))
@@ -38,6 +46,11 @@ namespace Diploma.Models
 
         public void AddRecord(RecordToCard recordToCard)
         {
+            var listForLog = new List<RecordToCard>();
+            listForLog.Add(recordToCard);
+            var message = JsonConvert.SerializeObject(listForLog.ToArray());
+            writeLogsToFile(" added new record " + message);
+
             var list = readRecordsFromFile();
             list.Add(recordToCard);
             var json = JsonConvert.SerializeObject(list.ToArray());
@@ -46,6 +59,11 @@ namespace Diploma.Models
 
         public void EdirRecord(RecordToCard record)
         {
+            var listForLogs = new List<RecordToCard>();
+            listForLogs.Add(record);
+            var message = JsonConvert.SerializeObject(listForLogs.ToArray());
+            writeLogsToFile(" edited the record " + message);
+
             var arrayRecords = readRecordsFromFile();
             var currentRecord =  arrayRecords.Where(p => p.Id == record.Id).SingleOrDefault();
             arrayRecords.Remove(currentRecord);
@@ -56,6 +74,11 @@ namespace Diploma.Models
 
         public void DeleteRecord(RecordToCard record)
         {
+            var listForLogs = new List<RecordToCard>();
+            listForLogs.Add(record);
+            var message = JsonConvert.SerializeObject(listForLogs.ToArray());
+            writeLogsToFile(" deleted record " + message);
+
             var arrayRecords = readRecordsFromFile();
             var currentRecord = arrayRecords.Where(p => p.Id == record.Id).SingleOrDefault();
             arrayRecords.Remove(currentRecord);
@@ -67,6 +90,11 @@ namespace Diploma.Models
         {
             var arrayRecords = readRecordsFromFile();
             var newArrayRecord = arrayRecords.Where(p => p.CardId != card.Id).ToList();
+
+            var newArrayForLogs = arrayRecords.Where(d => d.CardId == card.Id).ToList();
+            var message = JsonConvert.SerializeObject(newArrayForLogs.ToArray());
+            writeLogsToFile(" deletd records " + message);
+
             var json = JsonConvert.SerializeObject(newArrayRecord.ToArray());
             writeRecordsToFile(json);
         }
