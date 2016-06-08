@@ -23,6 +23,7 @@
 </div>
 <div id="rightSideCss">
     <div align="right">
+        <div dx-button="createReportButton"></div>
         <div dx-button="deleteCard"></div>
     </div>
     <div id="grid-container" dx-data-grid="dataGridInTreeView"></div>
@@ -48,4 +49,9 @@
     <div dx-button="confirmDeleteCardFromStorage"></div>
     <div dx-button="cancelFromDeletingCardFromStorage"></div>
 </div>
-
+<!--Popup for report-->
+<div class="popup" dx-popup="createReportPage">
+    <div dx-button="refreshDataForReport"></div>
+    <div id="grid-conteiner" dx-data-grid="dataGridOfAllRecordsOfCardAtPopup"></div>
+    
+</div>

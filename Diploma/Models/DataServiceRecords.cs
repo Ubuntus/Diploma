@@ -63,6 +63,14 @@ namespace Diploma.Models
             writeRecordsToFile(json);
         }
 
+        public void DeleteAllRecordOfCard(Card card)
+        {
+            var arrayRecords = readRecordsFromFile();
+            var newArrayRecord = arrayRecords.Where(p => p.CardId != card.Id).ToList();
+            var json = JsonConvert.SerializeObject(newArrayRecord.ToArray());
+            writeRecordsToFile(json);
+        }
+
 
     }
 }

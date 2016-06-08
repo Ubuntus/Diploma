@@ -37,6 +37,12 @@ namespace Diploma.Controllers
         {
             new DataServiceRecords().DeleteRecord(record);
         }
+        [Route("deleteAllRecordsOfCard")]
+        [HttpPost]
+        public void DeleteAllRecordsOfCard(Card card)
+        {
+            new DataServiceRecords().DeleteAllRecordOfCard(card);
+        }
 
              
     }

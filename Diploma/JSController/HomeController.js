@@ -20,7 +20,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     $scope.allRecordsOfCardArray = [];
     $scope.localArray = [];
     $scope.localArrayForDataGridFromClickToTreeviewElement = [];
-    
+    $scope.arrayForReport = [];
 
     //першапачатковы запыт на сервер 
     businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
@@ -252,6 +252,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 //console.log(personForSave);
                 businessLogicOfMyApp.sendCardToServer(personForSave);
                 $scope.visibleCreateNewCardPopup = false;
+                $location.path('/');
         }
     };
 
@@ -269,6 +270,11 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
     $scope.cardsDataGrid = {
         bindingOptions: {
             dataSource: 'cardsArray | filter: searchValue'
+        },
+        "export":{
+            enabled: true,
+            fileName: "cards"
+            
         },
         selection: {
             mode: 'single'
@@ -367,8 +373,11 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 $scope.jdskla = businessLogicOfMyApp.getVardsRecordsByCardId($routeParams.cardId, $scope.recordsArray);
                 $scope.localArray = $scope.chaptersArray.concat($scope.jdskla);
             });
+
+            updateArrays();
         }
     };
+    
     //поп-ап дадаць новы чаптэр
     $scope.createNewChapter = {
         closeOnOutsideClick: true,
@@ -481,6 +490,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
 
             businessLogicOfMyApp.sendNewRecordToStorage(recordToCard);
             updateArrays();
+            $scope.addNewRecordToCardwindow = false;
         }
     };
 
@@ -680,9 +690,82 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
         icon: 'remove',
         onClick: function (e) {
             businessLogicOfMyApp.deleteCardFromStorageFunc($scope.cardsArray, $routeParams.cardId);
-            
+            $scope.deleteCardFromStorageVisible = false;
+            $location.path('/');
         }
     };
+    //popup window for create report
+    $scope.createReportPage = {
+        closeOnOutsideClick: true,
+        dragEnabled: true,
+        title: 'Создать отчет',
+        height: 'auto',
+        width: 'auto',
+        bindingOptions: {
+            visible: 'createReportPopupWindow'
+        }
+    };
+    $scope.createReportButton = {
+        onClick: function () {
+            $scope.createReportPopupWindow = true;
+            //   $scope.arrayForReport = $scope.jdskla.concat($scope.chaptersArray);
+           
+        },
+        icon :'doc'
+    };
+
+    //////
+    $scope.refreshDataForReport = {
+        onClick: function () {
+            $scope.arrayForReport = businessLogicOfMyApp.findCaptionByIdToReportArray($scope.jdskla, $scope.chaptersArray);
+        },
+        icon: "refresh"
+    };
+    //datagrid of all record of card
+    $scope.dataGridOfAllRecordsOfCardAtPopup = {
+        bindingOptions: {
+            dataSource: "arrayForReport"
+        }, "export": {
+            enabled: true,
+            fileName: "cards"
+
+        },
+        height: 600,
+        width: 600,
+        paging: { pageSize: 6 },
+        pager: {
+            showPageSizeSelector: true,
+            allowedPageSized: [3, 5, 8]
+        },
+        showBorders: true,
+        showRowLines: true,
+        columns: [
+           {
+               dataField: "id",
+               caption: "№",
+               width: 30
+           },
+           {
+               dataField: 'dateOfCreateRecord',
+               caption: "Дата создания"
+           },
+           {
+               dataField: 'caption',
+               caption: 'Цель'
+           },
+           {
+               dataField: 'description',
+               caption: 'Описание'
+           },
+           {
+               dataField: 'cardId',
+               caption: "Раздел"
+           }
+           ]
+
+    };
+
+   
     //update arrays for id 
     var updateArrays = function () {
         businessLogicOfMyApp.getCardsFromServer().then(function (cards) {
@@ -726,6 +809,22 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
     var cardIdFromShowButton = 0;
     var returnedArrayEmpty = [];
     return {
+        //find caption by id for report
+        findCaptionByIdToReportArray:  function(recordsArray, chaptersArray)
+        {
+            var arrayForReport = recordsArray;
+            for (var i = 0; i < arrayForReport.length; i++)
+            {
+                for(var j =0; j<chaptersArray.length; j ++)
+                {
+                    if (arrayForReport[i].parentId == chaptersArray[j].id)
+                    {
+                        arrayForReport[i].parentId = chaptersArray[j].caption;
+                    }
+                }
+            }
+            return arrayForReport;
+        },
         //delete card form storage func
         deleteCardFromStorageFunc: function(cardsArray,id){
             var card = [];
@@ -741,6 +840,13 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
                 url: '/api/deleteCard',
                 data: card
             };
+
+            var reqToDeketeAllREcordOfCard = {
+                method: 'POST',
+                url: '/api/deleteAllRecordsOfCard',
+                data: card
+            };
+            $http(reqToDeketeAllREcordOfCard);
 
             $http(req);
             
@@ -794,6 +900,7 @@ myApp.factory('businessLogicOfMyApp', function ($http, $q) {
         },
         //id
         itemId: function (concatArray) {
+
            var idArray = [];
             if(concatArray.length != 0)
             {
