@@ -12,11 +12,21 @@ namespace Diploma.Models
         private string pathToFileWithCards = HttpContext.Current.Server.MapPath("Data/card.json");
 
         private string pathToLogFile = HttpContext.Current.Server.MapPath("Data/logs.log");
+        //path to reserve
+        private string pathToReserveCardsFile = HttpContext.Current.Server.MapPath("Data/rst_cards.json");
 
         private void writeLogToFile(string stringWithLog)
         {
             var dateNow = DateTime.Now;
             File.AppendAllText(pathToLogFile, dateNow + stringWithLog);
+        }
+        //write cards to reserve storage
+        public void writeCardsToReserveFile(string cards)
+        {
+            using (StreamWriter writer = new StreamWriter(pathToReserveCardsFile))
+            {
+                writer.Write(cards);
+            }
         }
 
         public void writeCardsToFile(string cards)
@@ -25,6 +35,18 @@ namespace Diploma.Models
             {
                 writer.Write(cards);
             }
+        }
+        //read from reserve file with cards
+        public List<Card> readCardsFromReserveFile()
+        {
+            var arrayCards = new List<Card>();
+            using (StreamReader reader = new StreamReader(pathToReserveCardsFile))
+            {
+                var strCards = reader.ReadToEnd();
+                arrayCards = JsonConvert.DeserializeObject<List<Card>>(strCards);
+                return arrayCards;
+            }
+
         }
 
         public  List<Card> readCardsFromFile()
@@ -56,6 +78,11 @@ namespace Diploma.Models
             var str = JsonConvert.SerializeObject(listToLog.ToArray());
            
             writeLogToFile(" added a new card " + str);
+            //add to reserve
+            var rst_list = readCardsFromReserveFile();
+            rst_list.Add(card);
+            var rst_json = JsonConvert.SerializeObject(rst_list.ToArray());
+            writeCardsToReserveFile(rst_json);
         }
 
         public void DeleteCard(Card card)

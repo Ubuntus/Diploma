@@ -606,7 +606,7 @@ myApp.controller("defaultController", function ($scope, businessLogicOfMyApp, $l
                 description: $scope.recordDescriptionEdit,
                 dateOfCreateRecord: $scope.itemDataCreatedForEditOrDelete
             };
-
+            $scope.editItemFromTreeviewPopupWindow = false;
             businessLogicOfMyApp.editItemFromTreeView(editRecordToCard);
   
         }
